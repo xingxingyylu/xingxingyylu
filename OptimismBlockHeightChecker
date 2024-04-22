@@ -1,0 +1,48 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
+import org.json.JSONObject;
+
+public class OptimismBlockHeightChecker {
+    public static void main(String[] args) throws Exception {
+        // Optimism 节点的 RPC URL
+        String rpcUrl = "https://mainnet.optimism.io"; // 您需要提供实际的 RPC URL
+
+        // 构建 JSON-RPC 请求
+        String requestBody = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_blockNumber\",\"params\":[]}";
+
+        // 创建 HTTP 连接
+        URL url = new URL(rpcUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+
+        // 发送请求体
+        try (var os = conn.getOutputStream()) {
+            byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+
+        // 读取响应
+        StringBuilder response = new StringBuilder();
+        try (var br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+        }
+
+        // 解析 JSON 响应
+        JSONObject jsonResponse = new JSONObject(response.toString());
+        String blockHeightHex = jsonResponse.getString("result");
+        long blockHeight = Long.parseLong(blockHeightHex.replace("0x", ""), 16);
+
+        System.out.println("Optimism Block Height: " + blockHeight);
+
+        conn.disconnect();
+    }
+}
