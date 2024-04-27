@@ -1,0 +1,9 @@
+contract_abi = [...]  # 合约的 ABI
+contract_address = '0xYourContractAddress'  # 智能合约地址
+
+# 创建智能合约实例
+contract = web3.eth.Contract(contract_abi, contract_address)
+
+# 调用智能合约的方法
+result = contract.methods.someMethod(param1, param2).call()  # 替换为实际方法
+print("合约调用结果:", result)
