@@ -1,0 +1,11 @@
+// 要查询的以太坊地址
+address = '0xYourArbitrumAddress';
+
+web3.eth.getBalance(address, (error, result) => {
+    if (error) {
+        console.error('查询余额出错:', error);
+    } else {
+        const balanceInEth = web3.utils.fromWei(result, 'ether');
+        console.log(`地址 ${address} 的余额是 ${balanceInEth} ETH`);
+    }
+});
